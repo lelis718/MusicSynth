@@ -1,15 +1,21 @@
 import { useState } from "react";
 import "./App.scss";
-import { Slider } from "./components/Slider";
+import { Osc1Settings, Osc1 } from "./components/Osc1";
+import { FilterSettings, Filter } from "./components/Filter";
+import WaveDisplay from "./components/WaveDisplay";
 
 let actx = new AudioContext();
 let out = actx.destination;
 
 export let osc1 = actx.createOscillator();
 let gain1 = actx.createGain();
-
+let filter = actx.createBiquadFilter();
+let analyser = actx.createAnalyser();
 osc1.connect(gain1);
-gain1.connect(out);
+gain1.connect(filter);
+filter.connect(analyser);
+analyser.connect(out);
+analyser.fftSize = 2048;
 
 function App() {
   const [osc1Settings, setOsc1Settings] = useState<Osc1Settings>({
@@ -17,6 +23,35 @@ function App() {
     detune: osc1.detune.value,
     type:"sine"
   });
+
+  const [filterSettings, setFilterSettings] = useState<FilterSettings>({
+    frequency: filter.frequency.value,
+    detune: filter.detune.value,
+    Q: filter.Q.value,
+    type: filter.type,
+    gain: filter.gain.value
+  });  
+
+  const changeFilter = (newvalue: any, id:string) => {
+    setFilterSettings({...filterSettings, [id]: newvalue});
+    switch(id){
+      case "frequency":
+        filter.frequency.value = newvalue;
+        break;
+        case "detune":
+          filter.detune.value = newvalue;
+          break;
+        case "Q":
+          filter.Q.value = newvalue;
+          break;
+        case "gain":
+          filter.gain.value = newvalue;
+          break;
+        case "type":
+          filter.type = (newvalue as BiquadFilterType);
+          break;
+        }
+  }
 
   const changeOsc1 = (newvalue: number, id: string) => {
     setOsc1Settings({ ...osc1Settings, [id]: newvalue });
@@ -40,6 +75,13 @@ function App() {
     <div className="App">
       <h1>Sliders</h1>
       <Osc1 settings={osc1Settings} onChange={changeOsc1} onChangeType={changeOsc1Type} />
+      <Filter settings={filterSettings} onChange={changeFilter} />
+      <WaveDisplay width={200} height={200} bufferlength={analyser.frequencyBinCount} getDataArray={()=> {
+        var bufferLength = analyser.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+        analyser.getByteTimeDomainData(dataArray);
+        return dataArray;        
+      }} ></WaveDisplay>
       <button
         onClick={() => {
           osc1.start();
@@ -54,45 +96,6 @@ function App() {
       >
         Stop
       </button>
-    </div>
-  );
-}
-
-type Osc1Settings = {
-  frequency: number;
-  detune: number;
-  type: OscillatorType
-};
-
-type Osc1Props = {
-  settings: Osc1Settings;
-  onChange: (newValue: number, property: string) => void;
-  onChangeType: (type: OscillatorType) => void;
-};
-
-function Osc1(props: Osc1Props) {
-  
-
-  return (
-    <div className="control">
-      <h3>Oscilator 1</h3>
-      <Slider
-        name="frequency"
-        value={props.settings.frequency}
-        maxValue={5000}
-        onChange={(value) => props.onChange(value, "frequency")}
-      ></Slider>
-      <Slider
-        name="detune"
-        value={props.settings.detune}
-        onChange={(value) => props.onChange(value, "detune")}
-      ></Slider>
-      <div>
-      <button id="sine" onClick={(e:any)=>props.onChangeType(e.target.id??"")} className={`${props.settings.type === "sine" && "active" }`}>sine</button>
-      <button id="sawtooth" onClick={(e:any)=>props.onChangeType(e.target.id??"") } className={`${props.settings.type === "sawtooth" && "active" }`}>sawtooth</button>
-      <button id="square" onClick={(e:any)=>props.onChangeType(e.target.id??"") } className={`${props.settings.type === "square" && "active" }`}>square</button>
-      <button id="triangle" onClick={(e:any)=>props.onChangeType(e.target.id??"") } className={`${props.settings.type === "triangle" && "active" }`}>triangle</button>
-      </div>
     </div>
   );
 }

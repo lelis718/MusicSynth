@@ -3,6 +3,7 @@ type SliderProps = {
   name: string;
   value?: number;
   maxValue?: number;
+  step?: number;
   onChange: (value: number) => void;
 };
 export function Slider(props: SliderProps) {
@@ -20,6 +21,7 @@ export function Slider(props: SliderProps) {
       <input
         onChange={handleValueChange}
         value={props.value}
+        step={props.step}
         type="range"
         max={props.maxValue}
         id="someRange"
