@@ -1,127 +1,51 @@
-import "./App.scss";
-import { useContext, useState } from "react";
-import { Osc1Settings, Osc1 } from "./components/Osc1";
-import { FilterSettings, Filter } from "./components/Filter";
-import WaveDisplay from "./components/WaveDisplay";
 import { createContext } from "react";
+import "./App.scss";
+import { Filter } from "./components/Filter";
+import { Gain } from "./components/Gain";
 import { Oscillator } from "./components/Oscillator";
+import WaveDisplay from "./components/WaveDisplay";
 
 
 
 let actx: AudioContext = new AudioContext();
 let out = actx.destination;
-
-
-
-let osc1 = actx.createOscillator();
-let gain1 = actx.createGain();
-let filter = actx.createBiquadFilter();
+let audioNodes: Map<string, AudioNode> = new Map();
 let analyser = actx.createAnalyser();
-osc1.connect(gain1);
-gain1.connect(filter);
-filter.connect(analyser);
 analyser.connect(out);
 analyser.fftSize = 2048;
+audioNodes.set("analyzer1", analyser);
 
-
-
+export const AppContext = createContext({
+  actx,
+  audioNodes
+});
 
 
 function App() {
 
-  const [osc1Settings, setOsc1Settings] = useState<Osc1Settings>({
-    frequency: osc1.frequency.value,
-    detune: osc1.detune.value,
-    type: "sine"
-  });
-
-  const [filterSettings, setFilterSettings] = useState<FilterSettings>({
-    frequency: filter.frequency.value,
-    detune: filter.detune.value,
-    Q: filter.Q.value,
-    type: filter.type,
-    gain: filter.gain.value
-  });
-
-  const changeFilter = (newvalue: any, id: string) => {
-    setFilterSettings({ ...filterSettings, [id]: newvalue });
-    switch (id) {
-      case "frequency":
-        filter.frequency.value = newvalue;
-        break;
-      case "detune":
-        filter.detune.value = newvalue;
-        break;
-      case "Q":
-        filter.Q.value = newvalue;
-        break;
-      case "gain":
-        filter.gain.value = newvalue;
-        break;
-      case "type":
-        filter.type = (newvalue as BiquadFilterType);
-        break;
-    }
-  }
-
-  const changeOsc1 = (newvalue: number, id: string) => {
-    setOsc1Settings({ ...osc1Settings, [id]: newvalue });
-    switch (id) {
-      case "frequency":
-        osc1.frequency.value = newvalue;
-        break;
-      case "detune":
-        osc1.detune.value = newvalue;
-        break;
-    }
-
-  };
-
-  const changeOsc1Type = (newValue: OscillatorType) => {
-    setOsc1Settings({ ...osc1Settings, type: newValue });
-    osc1.type = newValue;
-  };
-
   return (
-   <AppContext.Provider value={{actx}}>
-    <div className="App">
-      <h1>Sliders</h1>
-      <Osc1 settings={osc1Settings} onChange={changeOsc1} onChangeType={changeOsc1Type} />
-      <Filter settings={filterSettings} onChange={changeFilter} />
+    <AppContext.Provider value={{ actx, audioNodes }}>
       <WaveDisplay width={200} height={200} bufferlength={analyser.frequencyBinCount} getDataArray={() => {
         var bufferLength = analyser.frequencyBinCount;
         var dataArray = new Uint8Array(bufferLength);
         analyser.getByteTimeDomainData(dataArray);
         return dataArray;
       }} ></WaveDisplay>
-      <button
-        onClick={() => {
-          osc1.start();
-        }}
-      >
-        Start
-      </button>
-      <button
-        onClick={() => {
-          osc1.stop();
-        }}
-      >
-        Stop
-      </button>
-      <Oscillator></Oscillator>
-      <Oscillator></Oscillator>
-      <Oscillator></Oscillator>
-      <Oscillator></Oscillator>
-      <Oscillator></Oscillator>
-      <Oscillator></Oscillator>
-      <Oscillator></Oscillator>
-    </div>
+
+      <div className="App">
+        <Oscillator id="osc1" destination="gain1" />
+        <Oscillator id="osc2" destination="gain2" />
+        <Gain id="gain1" destination="filterOsc1" name="Oscillator 1 Gain" />
+        <Gain id="gain2" destination="filterOsc2" name="Oscillator 2 Gain" />
+        <Filter id="filterOsc1" destination="gain3" />
+        <Filter id="filterOsc2" destination="gain3" />
+        <Gain id="gain3" destination="analyzer1" name="Both Oscillators Gain" />
+      </div>
 
 
-   </AppContext.Provider> 
+    </AppContext.Provider>
   );
 }
 
 export default App;
 
-export const AppContext = createContext({actx});
