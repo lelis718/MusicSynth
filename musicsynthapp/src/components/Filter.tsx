@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Slider } from "./Slider";
+import Slider from "../layout/Slider";
 import { AppContext } from "../App";
 
 export type FilterSettings = {
@@ -11,15 +11,15 @@ export type FilterSettings = {
 }
 
 type FilterProps = {
-    id:string;
+    id: string;
     settings?: FilterSettings;
-    destination?:string
+    destination?: string
 };
 export function Filter(props: FilterProps) {
 
     const filterTypes = ["allpass", "bandpass", "highpass", "highshelf", "lowpass", "lowshelf", "notch", "peaking"];
 
-    const [settings, setSettings] = useState<FilterSettings>(props.settings?? {frequency:220, detune:0, Q:5, type:"lowpass", gain:0});
+    const [settings, setSettings] = useState<FilterSettings>(props.settings ?? { frequency: 220, detune: 0, Q: 5, type: "lowpass", gain: 0 });
     const [filterNode, setFilterNode] = useState<BiquadFilterNode>();
     const [destination, setDestination] = useState(props.destination);
     const { actx, audioNodes } = useContext(AppContext);
@@ -34,8 +34,8 @@ export function Filter(props: FilterProps) {
         filter.Q.value = settings.Q;
         filter.gain.value = settings.gain;
         filter.type = settings.type;
-        
-        if(destination){
+
+        if (destination) {
             filter.connect(audioNodes.get(destination) ?? actx.destination);
         } else {
             filter.connect(actx.destination);
@@ -45,10 +45,10 @@ export function Filter(props: FilterProps) {
 
     }, [])
 
-    useEffect(()=>{
-        if(!filterNode) return;
-        
-        if(destination){
+    useEffect(() => {
+        if (!filterNode) return;
+
+        if (destination) {
             filterNode.connect(audioNodes.get(destination) ?? actx.destination);
         } else {
             filterNode.connect(actx.destination);
@@ -57,28 +57,28 @@ export function Filter(props: FilterProps) {
     }, [filterNode, destination])
 
 
-      const change = (newvalue: any, id: string) => {
+    const change = (newvalue: any, id: string) => {
         setSettings({ ...settings, [id]: newvalue });
-        if(!filterNode) return;
-        
+        if (!filterNode) return;
+
         switch (id) {
-          case "frequency":
-            filterNode.frequency.value = newvalue;
-            break;
-          case "detune":
-            filterNode.detune.value = newvalue;
-            break;
-          case "Q":
-            filterNode.Q.value = newvalue;
-            break;
-          case "gain":
-            filterNode.gain.value = newvalue;
-            break;
-          case "type":
-            filterNode.type = (newvalue as BiquadFilterType);
-            break;
+            case "frequency":
+                filterNode.frequency.value = newvalue;
+                break;
+            case "detune":
+                filterNode.detune.value = newvalue;
+                break;
+            case "Q":
+                filterNode.Q.value = newvalue;
+                break;
+            case "gain":
+                filterNode.gain.value = newvalue;
+                break;
+            case "type":
+                filterNode.type = (newvalue as BiquadFilterType);
+                break;
         }
-      }
+    }
 
     return (
         <div className="control">
@@ -100,7 +100,7 @@ export function Filter(props: FilterProps) {
                 maxValue={10}
                 step={0.1}
                 onChange={(value) => change(value, "Q")}
-                ></Slider>
+            ></Slider>
             <Slider
                 name="gain"
                 value={settings.gain}

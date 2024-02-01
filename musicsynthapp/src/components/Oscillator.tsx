@@ -1,16 +1,17 @@
 import { useContext, useEffect, useId, useReducer, useState } from "react";
 import React from "react";
 import { AppContext } from "../App";
-import { Slider } from "./Slider";
+import Slider from "../layout/Slider";
+
 
 export type OscillatorSettings = {
-    frequency:number,
-    detune:number,
-    type:OscillatorType
-} 
+    frequency: number,
+    detune: number,
+    type: OscillatorType
+}
 
 type OscillatorProps = {
-    id:string,
+    id: string,
     name?: string,
     settings?: OscillatorSettings
     destination?: string
@@ -23,7 +24,7 @@ export const Oscillator = (props: OscillatorProps) => {
     const [isStarted, setStarted] = useState(false);
     const [destination] = useState(props.destination);
     const [oscillatorNode, setOscillatorNode] = useState<OscillatorNode>();
-    const {id} = props;
+    const { id } = props;
 
     useEffect(() => {
         connect(destination);
@@ -38,8 +39,8 @@ export const Oscillator = (props: OscillatorProps) => {
             osc.detune.value = settings.detune;
             osc.type = settings.type;
         }
-        if(destination){
-            console.log("conectando destino a ",audioNodes.get(destination) );
+        if (destination) {
+            console.log("conectando destino a ", audioNodes.get(destination));
             osc.connect(audioNodes.get(destination) ?? actx.destination);
         } else {
             osc.connect(actx.destination);
@@ -48,13 +49,13 @@ export const Oscillator = (props: OscillatorProps) => {
         osc.start();
 
         audioNodes.set(id, osc);
-        
+
         setOscillatorNode(osc);
         setStarted(true);
 
     }
-    const connect = (destinationId?:string) => {
-        if(destinationId){
+    const connect = (destinationId?: string) => {
+        if (destinationId) {
             oscillatorNode?.connect(audioNodes.get(destinationId) ?? actx.destination);
         } else {
             oscillatorNode?.connect(actx.destination);
