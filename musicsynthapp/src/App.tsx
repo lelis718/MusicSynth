@@ -5,6 +5,7 @@ import { Gain } from "./components/Gain";
 import { Oscillator } from "./components/Oscillator";
 import WaveDisplay from "./components/WaveDisplay";
 import Knob from "./layout/Knob";
+import OnOff from "./layout/OnOff";
 
 
 
@@ -26,11 +27,6 @@ function App() {
 
     return (
         <AppContext.Provider value={{ actx, audioNodes }}>
-
-
-            <div>
-                <Knob value={80} from={60} to={100} name="Volume"></Knob>
-            </div>
             <div className="App">
                 <Oscillator id="osc1" destination="gain1" />
                 <Oscillator id="osc2" destination="gain2" />
@@ -40,8 +36,6 @@ function App() {
                 <Filter id="filterOsc2" destination="gain3" />
                 <Gain id="gain3" destination="analyzer1" name="Both Oscillators Gain" />
             </div>
-
-
         </AppContext.Provider>
     );
 }

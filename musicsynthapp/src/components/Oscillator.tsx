@@ -2,6 +2,8 @@ import { useContext, useEffect, useId, useReducer, useState } from "react";
 import React from "react";
 import { AppContext } from "../App";
 import Slider from "../layout/Slider";
+import Knob from "../layout/Knob";
+import OnOff from "../layout/OnOff";
 
 
 export type OscillatorSettings = {
@@ -89,20 +91,15 @@ export const Oscillator = (props: OscillatorProps) => {
     }
 
     return <div className="control">
+        <div className="header">
         <h3>{props.name ?? "Oscillator 1"}</h3>
-        {!isStarted && <button onClick={(e) => { e.stopPropagation(); start(); }}>On</button>}
-        {isStarted && <button onClick={(e) => { e.stopPropagation(); stop(); }}>Off</button>}
-        <Slider
-            name="frequency"
-            value={settings.frequency}
-            maxValue={5000}
-            onChange={(value) => change(value, "frequency")}
-        ></Slider>
-        <Slider
-            name="detune"
-            value={settings.detune}
-            onChange={(value) => change(value, "detune")}
-        ></Slider>
+        <OnOff onChange={(value)=>{value?start():stop()}}></OnOff>
+        </div>
+        <div>
+        <Knob name="frequency" value={settings.frequency} from={0} to={5000} onValueChange={(value)=>{change(value, "frequency")}}></Knob>
+        <Knob name="detune" value={settings.detune} from={0} to={100} onValueChange={(value)=>{change(value, "detune")}}></Knob>
+
+        </div>
         <div>
             <button id="sine" onClick={(e: any) => change(e.target.id ?? "", "type")} className={`${settings.type === "sine" && "active"}`}>sine</button>
             <button id="sawtooth" onClick={(e: any) => change(e.target.id ?? "", "type")} className={`${settings.type === "sawtooth" && "active"}`}>sawtooth</button>
