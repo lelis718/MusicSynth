@@ -47,7 +47,7 @@ export const Gain = (props: GainProps) => {
         <Slider
             name="value"
             value={value}
-            maxValue={1}
+            maxValue={10}
             step={0.01}
             onChange={(value) => setValue(value)}
         ></Slider>

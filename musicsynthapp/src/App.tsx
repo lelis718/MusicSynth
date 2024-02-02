@@ -28,12 +28,14 @@ function App() {
     return (
         <AppContext.Provider value={{ actx, audioNodes }}>
             <div className="App">
-                <Oscillator id="osc1" destination="gain1" />
-                <Oscillator id="osc2" destination="gain2" />
-                <Gain id="gain1" destination="filterOsc1" name="Oscillator 1 Gain" />
-                <Gain id="gain2" destination="filterOsc2" name="Oscillator 2 Gain" />
-                <Filter id="filterOsc1" destination="gain3" />
-                <Filter id="filterOsc2" destination="gain3" />
+                <div>
+                    <Oscillator name="Oscillator 1" id="osc1" destination="filterOsc1" />
+                    <Filter name="Filter 1" id="filterOsc1" destination="gain3" />
+                </div>
+                <div>
+                    <Oscillator name="Oscillator 2" id="osc2" destination="filterOsc2" />
+                    <Filter name="Filter 2" id="filterOsc2" destination="gain3" />
+                </div>
                 <Gain id="gain3" destination="analyzer1" name="Both Oscillators Gain" />
             </div>
         </AppContext.Provider>

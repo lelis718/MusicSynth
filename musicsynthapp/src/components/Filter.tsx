@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Slider from "../layout/Slider";
 import { AppContext } from "../App";
+import Knob from "../layout/Knob";
 
 export type FilterSettings = {
     frequency: number
@@ -12,6 +13,7 @@ export type FilterSettings = {
 
 type FilterProps = {
     id: string;
+    name?: string;
     settings?: FilterSettings;
     destination?: string
 };
@@ -82,37 +84,20 @@ export function Filter(props: FilterProps) {
 
     return (
         <div className="control">
-            <h3>Filter 1</h3>
-            <Slider
-                name="frequency"
-                value={settings.frequency}
-                maxValue={10000}
-                onChange={(value) => change(value, "frequency")}
-            ></Slider>
-            <Slider
-                name="detune"
-                value={settings.detune}
-                onChange={(value) => change(value, "detune")}
-            ></Slider>
-            <Slider
-                name="Q"
-                value={settings.Q}
-                maxValue={10}
-                step={0.1}
-                onChange={(value) => change(value, "Q")}
-            ></Slider>
-            <Slider
-                name="gain"
-                value={settings.gain}
-                step={0.1}
-                maxValue={10}
-                onChange={(value) => change(value, "gain")}
-            ></Slider>
-
+            <div className="header">
+                <h3>{props.name ?? "Filter"}</h3>
+            </div>
             <div>
-                ({filterTypes.map(item => (
+                <Knob name="frequency" value={settings.frequency} from={0} to={10000} onValueChange={(value) => change(value, "frequency")} ></Knob>
+                <Knob name="detune" value={settings.detune} from={0} to={100} onValueChange={(value) => change(value, "detune")} ></Knob>
+                <Knob name="Q" value={settings.Q} from={0} to={10} onValueChange={(value) => change(value, "Q")} ></Knob>
+                <Knob name="gain" value={settings.gain} from={0} to={10} onValueChange={(value) => change(value, "gain")} ></Knob>
+            </div>
+
+            <div className="buttonGroup">
+                {filterTypes.map(item => (
                     <button key={item} id={item} onClick={(e: any) => change(item, "type")} className={`${settings.type === item && "active"}`}>{item}</button>
-                ))})
+                ))}
             </div>
         </div>
     );

@@ -22,11 +22,8 @@ const Knob = (props: KnobProps) => {
     const ticks = 27
     const volumeKnob = useRef<any>(null);
 
-    const {from, to} = {
-        from:props.from??0,
-        to:props.to??1
-    }
-
+    const [from, setFrom] = useState(props.from ?? 0)
+    const [to, setTo] = useState(props.to ?? 0)
     const [value, setValue] = useState(mapValueIn(from, to, props.value ?? 0));
     const [startDrag, setStartDrag] = useState(false);
     const [dragAngle, setDragAngle] = useState(value * 100 * 2.7);
@@ -69,7 +66,7 @@ const Knob = (props: KnobProps) => {
 
         const adjacentSide = knobCenterX - mouseX;
         const oppositeSide = knobCenterY - mouseY;
-        
+
         const currentRadiansAngle = Math.atan2(adjacentSide, oppositeSide);
 
         const getRadiansInDegrees = currentRadiansAngle * 180 / Math.PI;
@@ -83,9 +80,7 @@ const Knob = (props: KnobProps) => {
             const volumeSetting = finalAngleInDegrees / (270 / 100);
 
             setValue(volumeSetting / 100);
-        } else {
         }
-        console.log("Moving", adjacentSide, oppositeSide)
     }
 
 

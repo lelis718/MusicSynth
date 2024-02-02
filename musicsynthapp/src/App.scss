@@ -1,5 +1,13 @@
 .App {
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    >div {
+        display: flex;
+        flex-direction: row;
+    }
 }
 
 .control {
@@ -11,36 +19,74 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-radius: 2.5rem;
+    border-radius: 1rem;
+
+
     .header {
         display: flex;
         flex-direction: row;
+        align-items: flex-start;
+        width: 100%;
+
         h3 {
+            background-color: rgb(35 35 35);
             width: 100%;
+            align-self: stretch;
             text-align: center;
-            margin:0
+            margin: 0;
+            border-radius: 0.3rem;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            padding: 0.5em;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#131313', endColorstr='#1d1d1d', GradientType=0);
+            box-shadow: 0 0.2em 0.1em 0.05em rgba(255, 255, 255, 0.1) inset, 0 -0.2em 0.1em 0.05em rgba(0, 0, 0, 0.5) inset, 0 0.5em 0.65em 0 rgba(0, 0, 0, 0.3);
+
+            &.on {
+                color: #a8d8f8;
+            }
         }
     }
 
-    input {
-        width: 25rem;
+    .buttonGroup {
+        button {
+
+            margin: 0 0.1em;
+            border: 0 solid;
+            color: #a8d8f8;
+            padding: 1em;
+            border-radius: 10%;
+
+            background: #181818;
+            background: linear-gradient(linear, left bottom, left top, color-stop(0, #1d1d1d), color-stop(1, #131313));
+
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#131313', endColorstr='#1d1d1d', GradientType=0);
+            box-shadow: 0 0.2em 0.1em 0.05em rgba(255, 255, 255, 0.1) inset, 0 -0.2em 0.1em 0.05em rgba(0, 0, 0, 0.5) inset, 0 0.5em 0.65em 0 rgba(0, 0, 0, 0.3);
+
+        }
+
+        input {
+            width: 25rem;
+        }
+
+        .active {
+            background-color: #a8d8f8;
+            box-shadow: 0 0 0.3em 0.08em #79c3f4;
+            color: black;
+        }
+
+        &.off {
+            background: #181818;
+            background: linear-gradient(linear, left bottom, left top, color-stop(0, #1d1d1d), color-stop(1, #131313));
+
+        }
+
+        &.on {
+            background-color: #a8d8f8;
+            box-shadow: 0 0 0.3em 0.08em #79c3f4;
+        }
+
     }
 
-    .active {
-        background: rgb(24, 132, 240);
-        color: white;
-    }
-
-    button {
-        font-size: 1.4rem;
-        padding: 0.5rem;
-        margin: 0.5rem;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: 0 auto;
-        border-radius: 0.5rem;
-
-    }
 }
 
 .WaveWindow {
