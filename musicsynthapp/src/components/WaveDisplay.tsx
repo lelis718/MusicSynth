@@ -1,57 +1,60 @@
-import { useEffect, useRef } from "react";
+const WaveDisplay=()=>{}
+export default WaveDisplay;
 
-type WaveDisplayProps={
-    width: number,
-    height: number,
-    bufferlength: number,
-    getDataArray:()=>Uint8Array
-}
+// import { useEffect, useRef } from "react";
 
-export default function WaveDisplay (props:WaveDisplayProps) {
+// type WaveDisplayProps={
+//     width: number,
+//     height: number,
+//     bufferlength: number,
+//     getDataArray:()=>Uint8Array
+// }
 
-    const canvasRef = useRef<any>(null);
-    const requestRef = useRef<any>(null);
-    const drawFunction = (frametime:number) => {
+// export default function WaveDisplay (props:WaveDisplayProps) {
 
-        let dataArray = props.getDataArray();
+//     const canvasRef = useRef<any>(null);
+//     const requestRef = useRef<any>(null);
+//     const drawFunction = (frametime:number) => {
 
-        const canvasObj = canvasRef.current.getContext('2d');
+//         let dataArray = props.getDataArray();
 
-        canvasObj.fillStyle = 'rgb(200, 200, 200)';
-        canvasObj.fillRect(0, 0, props.width, props.height);
-        canvasObj.lineWidth = 2;
-        canvasObj.strokeStyle = 'rgb(0, 0, 0)';
+//         const canvasObj = canvasRef.current.getContext('2d');
 
-        canvasObj.beginPath();
-        var sliceWidth = props.width * 1.0 / props.bufferlength;
-        var x = 0;
+//         canvasObj.fillStyle = 'rgb(200, 200, 200)';
+//         canvasObj.fillRect(0, 0, props.width, props.height);
+//         canvasObj.lineWidth = 2;
+//         canvasObj.strokeStyle = 'rgb(0, 0, 0)';
 
-        for (var i = 0; i < props.bufferlength; i++) {
+//         canvasObj.beginPath();
+//         var sliceWidth = props.width * 1.0 / props.bufferlength;
+//         var x = 0;
 
-            var v = dataArray[i] / 128.0;
-            var y = v * props.height / 2;
+//         for (var i = 0; i < props.bufferlength; i++) {
 
-            if (i === 0) {
-                canvasObj.moveTo(x, y);
-            } else {
-                canvasObj.lineTo(x, y);
-            }
+//             var v = dataArray[i] / 128.0;
+//             var y = v * props.height / 2;
 
-            x += sliceWidth;
-        };
+//             if (i === 0) {
+//                 canvasObj.moveTo(x, y);
+//             } else {
+//                 canvasObj.lineTo(x, y);
+//             }
 
-        canvasObj.lineTo(canvasObj.width, canvasObj.height / 2);
-        canvasObj.stroke();
+//             x += sliceWidth;
+//         };
 
-        requestRef.current = requestAnimationFrame(drawFunction);
-    };
+//         canvasObj.lineTo(canvasObj.width, canvasObj.height / 2);
+//         canvasObj.stroke();
 
-    useEffect(() => {
-        const canvasObj = canvasRef.current.getContext('2d');
-        canvasObj.clearRect(0, 0, props.width, props.height);
-        requestRef.current = requestAnimationFrame(drawFunction);
-        return () => cancelAnimationFrame(requestRef.current);
-    }, [props])
+//         requestRef.current = requestAnimationFrame(drawFunction);
+//     };
 
-    return <div className="WaveWindow"><canvas ref={canvasRef} width={props.width} height={props.height}></canvas></div>
-}
+//     useEffect(() => {
+//         const canvasObj = canvasRef.current.getContext('2d');
+//         canvasObj.clearRect(0, 0, props.width, props.height);
+//         requestRef.current = requestAnimationFrame(drawFunction);
+//         return () => cancelAnimationFrame(requestRef.current);
+//     }, [props])
+
+//     return <div className="WaveWindow"><canvas ref={canvasRef} width={props.width} height={props.height}></canvas></div>
+// }

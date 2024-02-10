@@ -1,17 +1,10 @@
-import { useContext, useEffect, useId, useReducer, useState } from "react";
-import React from "react";
-import { AppContext } from "../App";
-import Slider from "../layout/Slider";
+import { useContext, useEffect, useState } from "react";
 import Knob from "../layout/Knob";
 import OnOff from "../layout/OnOff";
+import { OscillatorSettings } from "../engine/reducer";
+import { AppContext, useFetching } from "../engine/AppProvider";
 
 
-export type OscillatorSettings = {
-    frequency: number,
-    detune: number,
-    gain: number,
-    type: OscillatorType
-}
 
 type OscillatorProps = {
     id: string,
@@ -19,93 +12,42 @@ type OscillatorProps = {
     settings?: OscillatorSettings
     destination?: string
 }
+const initialSettings:OscillatorSettings =  { frequency: 220, gain: 0, type: "sine" };
 
 export const Oscillator = (props: OscillatorProps) => {
 
-    const { actx, audioNodes } = useContext(AppContext);
-    const [settings, setSettings] = useState<OscillatorSettings>(props.settings ?? { frequency: 220, detune: 0, gain: 0, type: "sine" });
+    const { dispatch } = useContext(AppContext);
+    const [settings, setSettings] = useState<OscillatorSettings>(props.settings ?? initialSettings);
     const [isStarted, setIsStarted] = useState(false);
-    const [oscillatorNode, setOscillatorNode] = useState<OscillatorNode>();
-    const [internalGainNode, setInternalGainNode] = useState<GainNode>();
-    const { id } = props;
+    const [destination, setDestination] = useState(props.destination);
 
-    useEffect(() => {
-        const gainNode = actx.createGain();
-        audioNodes.set(`${id}`, gainNode);
+    
+    useFetching({ actionName:"REGISTER_OSCILLATOR", synthId:props.id, settings:props.settings })
 
-        setInternalGainNode(gainNode);
-
-    }, [])
-
-    useEffect(() => {
-        connect(props.destination);
-    }, [props.destination])
+    useEffect(()=>{
+        dispatch({actionName:"CHANGE_NODE_DESTINATION", destinationId:destination, synthId:props.id})
+    },[destination, props.id])
 
     const start = () => {
-        if (oscillatorNode) stop();
-
-        const osc = actx.createOscillator();
-        if (internalGainNode) {
-            osc.connect(internalGainNode);
-        }
-
-        if (settings) {
-            osc.frequency.value = settings.frequency;
-            osc.detune.value = settings.detune;
-            osc.type = settings.type;
-        }
-        if (props.destination && internalGainNode) {
-            internalGainNode.connect(audioNodes.get(props.destination) ?? actx.destination);
-        } else {
-            internalGainNode?.connect(actx.destination);
-        }
-        osc.start(0);
-
-        audioNodes.set(`${id}-internalOsc`, osc);
-
-
-        setOscillatorNode(osc);
+        dispatch({ actionName:"START", synthId:props.id, nodeInstanceId: props.id })
         setIsStarted(true);
-
-    }
-    const connect = (destinationId?: string) => {
-        if (destinationId) {
-            internalGainNode?.connect(audioNodes.get(destinationId) ?? actx.destination);
-        } else {
-            internalGainNode?.connect(actx.destination);
-        }
     }
 
     const stop = () => {
-        oscillatorNode?.stop();
-        oscillatorNode?.disconnect();
-        audioNodes.delete(`${id}-internalOsc`);
-        setOscillatorNode(undefined);
+        dispatch({ actionName:"STOP", nodeInstanceId: props.id })
         setIsStarted(false);
     }
-
+    
     const change = (value: number | string, key: string) => {
-        setSettings({ ...settings, [key]: value });
-        if (!oscillatorNode) return;
-
-        switch (key) {
-            case "frequency":
-                oscillatorNode.frequency.value = value as number;
-                break;
-            case "detune":
-                oscillatorNode.detune.value = value as number;
-                break;
-            case "type":
-                oscillatorNode.type = value as OscillatorType;
-                break;
-
-        }
+        const newSettings = { ...settings, [key]: value };
+        dispatch({ actionName:"CHANGE_OSCILLATOR_SETTINGS", synthId: props.id, settings:newSettings })
+        setSettings({...newSettings})
     }
-
+    
     const changeGain = (value: number) => {
-        setSettings({ ...settings, "gain": value });
-        if (internalGainNode)
-            internalGainNode.gain.value = value;
+        const newSettings = { ...settings, "gain": value };
+        dispatch({ actionName:"CHANGE_OSCILLATOR_SETTINGS", synthId: props.id, settings:newSettings })
+        setSettings({...newSettings})
     }
 
     return <div className="control">
@@ -115,7 +57,7 @@ export const Oscillator = (props: OscillatorProps) => {
         </div>
         <div>
             <Knob name="frequency" value={settings.frequency} from={0} to={5000} onValueChange={(value) => { change(value, "frequency") }}></Knob>
-            <Knob name="detune" value={settings.detune} from={0} to={100} onValueChange={(value) => { change(value, "detune") }}></Knob>
+            <Knob name="detune" value={0} from={0} to={100} onValueChange={(value) => { change(value, "detune") }}></Knob>
             <Knob name="gain" value={settings.gain} from={0} to={10} onValueChange={(value) => { changeGain(value) }}></Knob>
         </div>
         <div className="buttonGroup">
@@ -125,4 +67,5 @@ export const Oscillator = (props: OscillatorProps) => {
             <button id="triangle" onClick={(e: any) => change(e.target.id ?? "", "type")} className={`${settings.type === "triangle" && "active"}`}>triangle</button>
         </div>
     </div>
+
 }

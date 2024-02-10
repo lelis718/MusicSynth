@@ -22,8 +22,8 @@ const Knob = (props: KnobProps) => {
     const ticks = 27
     const volumeKnob = useRef<any>(null);
 
-    const [from, setFrom] = useState(props.from ?? 0)
-    const [to, setTo] = useState(props.to ?? 0)
+    const [from] = useState(props.from ?? 0)
+    const [to] = useState(props.to ?? 0)
     const [value, setValue] = useState(mapValueIn(from, to, props.value ?? 0));
     const [startDrag, setStartDrag] = useState(false);
     const [dragAngle, setDragAngle] = useState(value * 100 * 2.7);
@@ -33,7 +33,7 @@ const Knob = (props: KnobProps) => {
             props.onValueChange(mapValueOut(from, to, value));
         }
 
-    }, [value])
+    }, [from, to, value])
 
     const detectMobile = () => {
         const result = navigator.userAgent.match("/(iphone)|(ipod)|(ipad)|(android)|(blackberry)|(windows phone)|(symbian)/i");
@@ -53,7 +53,7 @@ const Knob = (props: KnobProps) => {
         const knobPositionY = rect.top + window.scrollY;
 
         let mouseX, mouseY = 0;
-        if (detectMobile() == "desktop") {
+        if (detectMobile() === "desktop") {
             mouseX = event.pageX;
             mouseY = event.pageY;
         } else {
