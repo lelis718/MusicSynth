@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { AppContext, useFetching } from "../engine/AppProvider";
-import { EnvelopeSettings } from "../engine/reducer";
+import { EnvelopeSettings } from "../engine/SynthEnvelope";
 import Knob from "../layout/Knob";
 
 type EnvelopeProps = {
@@ -11,7 +11,7 @@ type EnvelopeProps = {
 };
 export function Envelope(props: EnvelopeProps) {
   const [settings, setSettings] = useState<EnvelopeSettings>(
-    props.settings ?? { attack: 0.2, sustain: 0.8, decay: 0.5, release: 0.6 }
+    props.settings ?? { attack: 0.02, sustain: 0.85, decay: 0.1, release: 0.06 }
   );
   const { state, dispatch } = useContext(AppContext);
   const { id } = props;

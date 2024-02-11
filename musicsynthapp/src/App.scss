@@ -11,6 +11,7 @@
 }
 
 .control {
+    width: 900px;
     background: rgb(57, 61, 77);
     margin: 1.5rem;
     padding: 1.5rem;
@@ -93,4 +94,14 @@
     position: fixed;
     top: 0;
     left: 0;
+}
+
+.keyboardControl {
+    display: flex;
+    >div{
+        margin:auto;
+    }
+    >div>ul{
+        width: 940px !important;
+    }
 }

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Knob from "../layout/Knob";
 import OnOff from "../layout/OnOff";
-import { OscillatorSettings } from "../engine/reducer";
+import { OscillatorSettings } from "../engine/SynthOscillator";
 import { AppContext, useFetching } from "../engine/AppProvider";
 
 
@@ -12,7 +12,7 @@ type OscillatorProps = {
     settings?: OscillatorSettings
     destination?: string
 }
-const initialSettings:OscillatorSettings =  { frequency: 220, gain: 0, type: "sine" };
+const initialSettings:OscillatorSettings =  { frequency: 220, gain: 0, detune:0, type: "sine" };
 
 export const Oscillator = (props: OscillatorProps) => {
 
